@@ -34,3 +34,9 @@ class AirplaneTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AirplaneType
         fields = ("id", "name")
+
+
+class RouteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Route
+        fields = ("id", "source", "destination", "distance")
