@@ -52,3 +52,9 @@ class FlightSerializer(serializers.ModelSerializer):
             "departure_time",
             "arrival_time",
         )
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ("id", "created_at", "user",)

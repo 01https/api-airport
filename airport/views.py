@@ -16,7 +16,8 @@ from airport.serializers import (
     AirplaneSerializer,
     AirplaneTypeSerializer,
     RouteSerializer,
-    FlightSerializer
+    FlightSerializer,
+    OrderSerializer,
 )
 
 
@@ -43,3 +44,8 @@ class RouteViewSet(viewsets.ModelViewSet):
 class FlightViewSet(viewsets.ModelViewSet):
     queryset = Flight.objects.select_related("route", "airplane")
     serializer_class = FlightSerializer
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.select_related("user")
+    serializer_class = OrderSerializer

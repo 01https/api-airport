@@ -51,17 +51,17 @@ class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
 
     def __str__(self):
-        return self.created_at, self.user
+        return f"{self.created_at}, {self.user}"
 
 
 class Ticket(models.Model):
     row = models.IntegerField()
     seat = models.IntegerField()
     flight = models.ForeignKey("Flight", on_delete=models.PROTECT)
-    order = models.ForeignKey("Order", on_delete=models.PROTECT)
+    order = models.ForeignKey("Order", on_delete=models.PROTECT, related_name="tickets")
 
     def __str__(self):
-        return self.row, self.seat, self.order
+        return f"{self.row}, {self.seat}, {self.order}"
 
 
 class Crew(models.Model):
@@ -69,4 +69,4 @@ class Crew(models.Model):
     last_name = models.CharField(max_length=80)
 
     def __str__(self):
-        return self.first_name, self.last_name
+        return f"{self.first_name}, {self.last_name}"
