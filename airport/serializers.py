@@ -13,22 +13,16 @@ from airport.models import (
 )
 
 
+class CrewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Crew
+        fields = ("id", "first_name", "last_name")
+
+
 class AirportSerializer(serializers.ModelSerializer):
     class Meta:
         model = Airport
         fields = ("id", "name", "closest_big_city")
-
-
-class AirplaneSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Airplane
-        fields = (
-            "id",
-            "name",
-            "rows",
-            "seats_in_row",
-            "airplane_type"
-        )
 
 
 class AirplaneTypeSerializer(serializers.ModelSerializer):
@@ -37,21 +31,54 @@ class AirplaneTypeSerializer(serializers.ModelSerializer):
         fields = ("id", "name")
 
 
+class AirplaneSerializer(serializers.ModelSerializer):
+    airplane_type = serializers.SlugRelatedField(
+        queryset=AirplaneType.objects.all(),
+        slug_field="name",
+    )
+
+    class Meta:
+        model = Airplane
+        fields = (
+            "id",
+            "name",
+            "rows",
+            "seats_in_row",
+            "airplane_type",
+        )
+
+
 class RouteSerializer(serializers.ModelSerializer):
+    source = serializers.SlugRelatedField(
+        queryset=Airport.objects.all(),
+        slug_field="closest_big_city"
+    )
+    destination = serializers.SlugRelatedField(
+        queryset=Airport.objects.all(),
+        slug_field="closest_big_city"
+    )
+
     class Meta:
         model = Route
         fields = ("id", "source", "destination", "distance")
 
 
 class FlightSerializer(serializers.ModelSerializer):
+    departures = serializers.CharField(source="route.source.closest_big_city", read_only=True)
+    arrivals = serializers.CharField(source="route.destination.closest_big_city", read_only=True)
+    members = serializers.StringRelatedField(many=True)
+
     class Meta:
         model = Flight
         fields = (
             "id",
             "route",
             "airplane",
+            "departures",
+            "arrivals",
             "departure_time",
             "arrival_time",
+            "members",
         )
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -75,8 +102,3 @@ class OrderSerializer(serializers.ModelSerializer):
                 Ticket.objects.create(order=order, **ticket_data)
             return order
 
-
-class CrewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Crew
-        fields = ("id", "first_name", "last_name")

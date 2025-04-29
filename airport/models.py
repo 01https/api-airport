@@ -41,6 +41,7 @@ class Flight(models.Model):
     airplane = models.ForeignKey("Airplane", on_delete=models.PROTECT)
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
+    members = models.ManyToManyField("Crew", related_name="crews")
 
     def __str__(self):
         return f"{self.route} - {self.airplane}"
@@ -69,4 +70,4 @@ class Crew(models.Model):
     last_name = models.CharField(max_length=80)
 
     def __str__(self):
-        return f"{self.first_name}, {self.last_name}"
+        return f"{self.first_name} {self.last_name}"
