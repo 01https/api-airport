@@ -33,3 +33,13 @@ class Route(models.Model):
 
     def __str__(self):
         return self.source, self.destination
+
+
+class Flight(models.Model):
+    route = models.ForeignKey("Route", on_delete=models.PROTECT)
+    airplane = models.ForeignKey("Airplane", on_delete=models.PROTECT)
+    departure_time = models.DateTimeField()
+    arrival_time = models.DateTimeField()
+
+    def __str__(self):
+        return self.route, self.airplane
