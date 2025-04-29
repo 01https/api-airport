@@ -52,3 +52,13 @@ class Order(models.Model):
 
     def __str__(self):
         return self.created_at, self.user
+
+
+class Ticket(models.Model):
+    row = models.IntegerField()
+    seat = models.IntegerField()
+    flight = models.ForeignKey("Flight", on_delete=models.PROTECT)
+    order = models.ForeignKey("Order", on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.row, self.seat, self.order
