@@ -7,3 +7,13 @@ class Airport(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Airplane(models.Model):
+    name = models.CharField(max_length=80, unique=True)
+    rows = models.IntegerField()
+    seats_in_row = models.IntegerField()
+    airplane_type = models.ForeignKey("AirplaneType", on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.name
