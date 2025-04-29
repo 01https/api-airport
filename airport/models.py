@@ -24,3 +24,12 @@ class AirplaneType(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Route(models.Model):
+    source = models.ForeignKey("Airport", on_delete=models.PROTECT, related_name="departures")
+    destination = models.ForeignKey("Airport", on_delete=models.PROTECT, related_name="arrivals")
+    distance = models.IntegerField()
+
+    def __str__(self):
+        return self.source, self.destination
