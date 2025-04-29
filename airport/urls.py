@@ -13,9 +13,9 @@ router = routers.DefaultRouter()
 router.register("port", AirportViewSet, basename="port")
 router.register("airplanes", AirplaneViewSet, basename="airplanes")
 router.register("airplanes-type", AirPlaneTypeViewSet, basename="airplanes-type")
-router.register("route", RouteViewSet, basename="routes")
-router.register("flight", FlightViewSet, basename="flights")
-router.register("order", OrderViewSet, basename="orders")
+router.register("routes", RouteViewSet, basename="routes")
+router.register("flights", FlightViewSet, basename="flights")
+router.register("orders", OrderViewSet, basename="orders")
 
 urlpatterns = [
     path("", include(router.urls))
