@@ -62,3 +62,11 @@ class Ticket(models.Model):
 
     def __str__(self):
         return self.row, self.seat, self.order
+
+
+class Crew(models.Model):
+    first_name = models.CharField(max_length=80)
+    last_name = models.CharField(max_length=80)
+
+    def __str__(self):
+        return self.first_name, self.last_name
