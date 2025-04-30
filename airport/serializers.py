@@ -64,9 +64,13 @@ class RouteSerializer(serializers.ModelSerializer):
 
 
 class FlightSerializer(serializers.ModelSerializer):
-    departures = serializers.CharField(source="route.source.closest_big_city", read_only=True)
-    arrivals = serializers.CharField(source="route.destination.closest_big_city", read_only=True)
-    members = serializers.StringRelatedField(many=True)
+    departures = serializers.CharField(source="route.source", read_only=True)
+    arrivals = serializers.CharField(source="route.destination", read_only=True)
+    members = serializers.SlugRelatedField(
+        many=True,
+        queryset=Crew.objects.all(),
+        slug_field="full_name"
+    )
 
     class Meta:
         model = Flight
