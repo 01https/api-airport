@@ -51,9 +51,12 @@ class RouteViewSet(viewsets.ModelViewSet):
 
 
 class FlightViewSet(viewsets.ModelViewSet):
-    queryset = Flight.objects.select_related("route", "airplane")
+    queryset = Flight.objects.select_related(
+        "route__source",
+        "route__destination",
+        "airplane",
+    ).prefetch_related("members")
     serializer_class = FlightSerializer
-
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.select_related("user")

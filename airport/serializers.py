@@ -89,13 +89,16 @@ class RouteDetailSerializer(RouteListSerializer):
 
 
 class FlightSerializer(serializers.ModelSerializer):
-    departures = serializers.CharField(source="route.source", read_only=True)
-    arrivals = serializers.CharField(source="route.destination", read_only=True)
-    members = serializers.SlugRelatedField(
-        many=True,
-        queryset=Crew.objects.all(),
-        slug_field="full_name"
+    route = serializers.PrimaryKeyRelatedField(
+        queryset=Route.objects.select_related("source", "destination")
     )
+    departure = serializers.SerializerMethodField()
+    arrival = serializers.SerializerMethodField()
+    airplane = serializers.SlugRelatedField(
+        queryset=Airplane.objects.all(),
+        slug_field="name"
+    )
+    members = CrewSerializer(many=True)
 
     class Meta:
         model = Flight
@@ -103,12 +106,19 @@ class FlightSerializer(serializers.ModelSerializer):
             "id",
             "route",
             "airplane",
-            "departures",
-            "arrivals",
+            "departure",
+            "arrival",
             "departure_time",
             "arrival_time",
-            "members",
+            "members"
         )
+
+    def get_departure(self, obj):
+        return obj.route.source.name
+
+    def get_arrival(self, obj):
+        return obj.route.destination.name
+
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
