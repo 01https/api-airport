@@ -49,18 +49,43 @@ class AirplaneSerializer(serializers.ModelSerializer):
 
 
 class RouteSerializer(serializers.ModelSerializer):
-    source = serializers.SlugRelatedField(
-        queryset=Airport.objects.all(),
-        slug_field="closest_big_city"
+    class Meta:
+        model = Route
+        fields = ("id", "source", "destination", "distance")
+
+
+class RouteListSerializer(RouteSerializer):
+    source_airport = serializers.CharField(source="source.name")
+    destination_airport = serializers.CharField(source="destination.name")
+
+    class Meta:
+        model = Route
+        fields = (
+            "id",
+            "source_airport",
+            "destination_airport",
+            "distance"
+        )
+
+
+class RouteDetailSerializer(RouteListSerializer):
+    source_closest_big_city = serializers.CharField(
+        source="source.closest_big_city"
     )
-    destination = serializers.SlugRelatedField(
-        queryset=Airport.objects.all(),
-        slug_field="closest_big_city"
+    destination_closest_big_city = serializers.CharField(
+        source="destination.closest_big_city"
     )
 
     class Meta:
         model = Route
-        fields = ("id", "source", "destination", "distance")
+        fields = (
+            "id",
+            "source_airport",
+            "destination_airport",
+            "source_closest_big_city",
+            "destination_closest_big_city",
+            "distance",
+        )
 
 
 class FlightSerializer(serializers.ModelSerializer):
