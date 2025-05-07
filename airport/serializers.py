@@ -92,12 +92,15 @@ class FlightSerializer(serializers.ModelSerializer):
     route = serializers.PrimaryKeyRelatedField(
         queryset=Route.objects.select_related("source", "destination")
     )
-    departure = serializers.SerializerMethodField()
-    arrival = serializers.SerializerMethodField()
-    airplane = serializers.SlugRelatedField(
-        queryset=Airplane.objects.all(),
-        slug_field="name"
+    airplane = serializers.PrimaryKeyRelatedField(
+        queryset=Airplane.objects.all()
     )
+    departure = serializers.SerializerMethodField()
+    airplane_type = serializers.SerializerMethodField()
+    seat_in_row = serializers.SerializerMethodField()
+    row = serializers.SerializerMethodField()
+    arrival = serializers.SerializerMethodField()
+    distance = serializers.SerializerMethodField()
 
     class Meta:
         model = Flight
@@ -105,10 +108,14 @@ class FlightSerializer(serializers.ModelSerializer):
             "id",
             "route",
             "airplane",
+            "airplane_type",
+            "row",
+            "seat_in_row",
             "departure",
             "arrival",
             "departure_time",
             "arrival_time",
+            "distance",
             "members"
         )
 
@@ -118,11 +125,28 @@ class FlightSerializer(serializers.ModelSerializer):
     def get_arrival(self, obj):
         return obj.route.destination.name
 
-class FlightListSerializer(FlightSerializer):
+    def get_distance(self, obj):
+        return obj.route.distance
+
+    def get_airplane_type(self, obj):
+        return obj.airplane.airplane_type.name
+
+    def get_seat_in_row(self, obj):
+        return obj.airplane.seats_in_row
+
+    def get_row(self, obj):
+        return obj.airplane.rows
+
+class FlightListAndRetrieveSerializer(FlightSerializer):
     members = serializers.SlugRelatedField(
         many=True,
         slug_field="full_name",
         read_only=True
+    )
+    airplane = serializers.SlugRelatedField(
+        queryset=Airplane.objects.all(),
+        slug_field="name",
+        many=False
     )
 
 
