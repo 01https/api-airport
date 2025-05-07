@@ -66,7 +66,9 @@ class FlightViewSet(viewsets.ModelViewSet):
         return FlightSerializer
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.select_related("user")
+    queryset = Order.objects.select_related(
+        "user"
+    ).prefetch_related("tickets")
     serializer_class = OrderSerializer
 
     def get_serializer_class(self):
@@ -75,6 +77,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         elif self.action == "retrieve":
             return OrderRetrieveSerializer
         return OrderSerializer
+
 
 class CrewViewSet(viewsets.ModelViewSet):
     queryset = Crew.objects.all()
