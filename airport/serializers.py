@@ -98,7 +98,6 @@ class FlightSerializer(serializers.ModelSerializer):
         queryset=Airplane.objects.all(),
         slug_field="name"
     )
-    members = CrewSerializer(many=True)
 
     class Meta:
         model = Flight
@@ -118,6 +117,13 @@ class FlightSerializer(serializers.ModelSerializer):
 
     def get_arrival(self, obj):
         return obj.route.destination.name
+
+class FlightListSerializer(FlightSerializer):
+    members = serializers.SlugRelatedField(
+        many=True,
+        slug_field="full_name",
+        read_only=True
+    )
 
 
 class TicketSerializer(serializers.ModelSerializer):

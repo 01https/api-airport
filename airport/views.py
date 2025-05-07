@@ -19,7 +19,10 @@ from airport.serializers import (
     FlightSerializer,
     OrderSerializer,
     TicketSerializer,
-    CrewSerializer, RouteListSerializer, RouteDetailSerializer,
+    CrewSerializer,
+    RouteListSerializer,
+    RouteDetailSerializer,
+    FlightListSerializer,
 )
 
 
@@ -57,6 +60,11 @@ class FlightViewSet(viewsets.ModelViewSet):
         "airplane",
     ).prefetch_related("members")
     serializer_class = FlightSerializer
+
+    def get_serializer_class(self):
+        if self.action in ("list", "retrieve"):
+            return FlightListSerializer
+        return FlightSerializer
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.select_related("user")
