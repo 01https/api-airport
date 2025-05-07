@@ -184,5 +184,5 @@ class OrderListSerializer(OrderSerializer):
     user = serializers.CharField(source="user.email")
 
 
-class OrderRetrieveSerializer(OrderSerializer):
+class OrderRetrieveSerializer(OrderListSerializer):
     tickets = TicketRetrieveForOrderSerializer(many=True, read_only=False, allow_empty=False)
