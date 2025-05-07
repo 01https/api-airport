@@ -156,6 +156,14 @@ class TicketSerializer(serializers.ModelSerializer):
         fields = ("id", "row", "seat", "flight")
 
 
+class TicketRetrieveForOrderSerializer(TicketSerializer):
+    flight = FlightListAndRetrieveSerializer()
+
+    class Meta:
+        model = Ticket
+        fields = ("id", "row", "seat", "flight")
+
+
 class OrderSerializer(serializers.ModelSerializer):
     tickets = TicketSerializer(many=True, read_only=False, allow_empty=False)
 
@@ -171,3 +179,10 @@ class OrderSerializer(serializers.ModelSerializer):
                 Ticket.objects.create(order=order, **ticket_data)
             return order
 
+
+class OrderListSerializer(OrderSerializer):
+    user = serializers.CharField(source="user.email")
+
+
+class OrderRetrieveSerializer(OrderSerializer):
+    tickets = TicketRetrieveForOrderSerializer(many=True, read_only=False, allow_empty=False)
