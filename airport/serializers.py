@@ -107,6 +107,7 @@ class FlightSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field="seat"
     )
+    available_seats = serializers.SerializerMethodField()
 
     class Meta:
         model = Flight
@@ -118,6 +119,7 @@ class FlightSerializer(serializers.ModelSerializer):
             "row",
             "seat_in_row",
             "taken_seats",
+            "available_seats",
             "departure",
             "arrival",
             "departure_time",
@@ -143,6 +145,9 @@ class FlightSerializer(serializers.ModelSerializer):
 
     def get_row(self, obj):
         return obj.airplane.rows
+
+    def get_available_seats(self, obj):
+        return obj.available_seats()
 
 class FlightListAndRetrieveSerializer(FlightSerializer):
     members = serializers.SlugRelatedField(

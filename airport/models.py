@@ -46,6 +46,13 @@ class Flight(models.Model):
     def __str__(self):
         return f"{self.route} - {self.airplane}"
 
+    def available_seats(self):
+        total_seats = self.airplane.rows * self.airplane.seats_in_row
+
+        taken_seats = self.tickets.count()
+
+        return total_seats - taken_seats
+
 
 class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
