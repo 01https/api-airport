@@ -46,12 +46,24 @@ class Flight(models.Model):
     def __str__(self):
         return f"{self.route} - {self.airplane}"
 
+    @property
     def available_seats(self):
         total_seats = self.airplane.rows * self.airplane.seats_in_row
 
         taken_seats = self.tickets.count()
 
         return total_seats - taken_seats
+
+    @property
+    def taken_seats_detail(self):
+        return [
+            {"row": ticket.row, "seat": ticket.seat}
+            for ticket in Ticket.objects.all()
+        ]
+
+    @property
+    def taken_seats_list(self):
+        return self.tickets.count()
 
 
 class Order(models.Model):
