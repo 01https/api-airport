@@ -101,12 +101,6 @@ class FlightSerializer(serializers.ModelSerializer):
     row = serializers.SerializerMethodField()
     arrival = serializers.SerializerMethodField()
     distance = serializers.SerializerMethodField()
-    taken_seats = serializers.SlugRelatedField(
-        source="tickets",
-        many=True,
-        read_only=True,
-        slug_field="seat"
-    )
     available_seats = serializers.SerializerMethodField()
 
     class Meta:
@@ -118,14 +112,12 @@ class FlightSerializer(serializers.ModelSerializer):
             "airplane_type",
             "row",
             "seat_in_row",
-            "taken_seats",
             "available_seats",
             "departure",
             "arrival",
             "departure_time",
             "arrival_time",
             "distance",
-            "members"
         )
 
     def get_departure(self, obj):
@@ -147,19 +139,64 @@ class FlightSerializer(serializers.ModelSerializer):
         return obj.airplane.rows
 
     def get_available_seats(self, obj):
-        return obj.available_seats()
+        return obj.available_seats
 
-class FlightListAndRetrieveSerializer(FlightSerializer):
-    members = serializers.SlugRelatedField(
-        many=True,
-        slug_field="full_name",
-        read_only=True
-    )
+class FlightListSerializer(FlightSerializer):
     airplane = serializers.SlugRelatedField(
         queryset=Airplane.objects.all(),
         slug_field="name",
         many=False
     )
+    taken_seats = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Flight
+        fields = (
+            "id",
+            "route",
+            "airplane",
+            "airplane_type",
+            "taken_seats",
+            "available_seats",
+            "departure",
+            "arrival",
+            "departure_time",
+            "arrival_time",
+        )
+
+    def get_taken_seats(self, obj):
+        return obj.taken_seats_list
+
+
+class FlightRetrieveSerializer(FlightListSerializer):
+    members = serializers.SlugRelatedField(
+        many=True,
+        slug_field="full_name",
+        read_only=True
+    )
+    taken_seats = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Flight
+        fields = (
+            "id",
+            "route",
+            "airplane",
+            "airplane_type",
+            "row",
+            "seat_in_row",
+            "departure",
+            "arrival",
+            "departure_time",
+            "arrival_time",
+            "distance",
+            "members",
+            "available_seats",
+            "taken_seats"
+        )
+
+    def get_taken_seats(self, obj):
+        return obj.taken_seats_detail
 
 
 class TicketSerializer(serializers.ModelSerializer):
@@ -167,9 +204,31 @@ class TicketSerializer(serializers.ModelSerializer):
         model = Ticket
         fields = ("id", "row", "seat", "flight")
 
+    def validate(self, attrs):
+        flight = attrs["flight"]
+        seat = attrs["seat"]
+        row = attrs["row"]
+        airplane = flight.airplane
+
+        errors = {}
+
+        if Ticket.objects.filter(flight=flight, row=row, seat=seat).exists():
+            errors["taken_seats"] = f"Seat {row}-{seat} is already occupied on this flight"
+
+        if seat < 1 or seat > airplane.seats_in_row:
+            errors["seat"] = f"The seat number {seat} is out of range (1 - {airplane.seats_in_row})"
+
+        if row < 1 or row > airplane.rows:
+            errors["row"] = f"The row number {row} is out of range (1 - {airplane.rows})"
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return attrs
+
 
 class TicketRetrieveForOrderSerializer(TicketSerializer):
-    flight = FlightListAndRetrieveSerializer()
+    flight = FlightListSerializer()
 
     class Meta:
         model = Ticket
