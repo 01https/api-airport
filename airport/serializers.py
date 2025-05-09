@@ -101,6 +101,12 @@ class FlightSerializer(serializers.ModelSerializer):
     row = serializers.SerializerMethodField()
     arrival = serializers.SerializerMethodField()
     distance = serializers.SerializerMethodField()
+    taken_seats = serializers.SlugRelatedField(
+        source="tickets",
+        many=True,
+        read_only=True,
+        slug_field="seat"
+    )
 
     class Meta:
         model = Flight
@@ -111,6 +117,7 @@ class FlightSerializer(serializers.ModelSerializer):
             "airplane_type",
             "row",
             "seat_in_row",
+            "taken_seats",
             "departure",
             "arrival",
             "departure_time",

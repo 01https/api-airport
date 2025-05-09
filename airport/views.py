@@ -57,7 +57,7 @@ class FlightViewSet(viewsets.ModelViewSet):
         "route__destination",
         "airplane",
         "airplane__airplane_type"
-    ).prefetch_related("members")
+    ).prefetch_related("members", "tickets")
     serializer_class = FlightSerializer
 
     def get_serializer_class(self):
