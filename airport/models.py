@@ -89,7 +89,7 @@ class Crew(models.Model):
     last_name = models.CharField(max_length=80)
 
     @property
-    def full_name(self):
+    def full_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
     def __str__(self):

@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 from django.db import transaction
 
@@ -120,25 +121,32 @@ class FlightSerializer(serializers.ModelSerializer):
             "distance",
         )
 
-    def get_departure(self, obj):
+    @extend_schema_field(str)
+    def get_departure(self, obj) -> str:
         return obj.route.source.name
 
-    def get_arrival(self, obj):
+    @extend_schema_field(str)
+    def get_arrival(self, obj) -> str:
         return obj.route.destination.name
 
-    def get_distance(self, obj):
+    @extend_schema_field(int)
+    def get_distance(self, obj) -> int:
         return obj.route.distance
 
-    def get_airplane_type(self, obj):
+    @extend_schema_field(str)
+    def get_airplane_type(self, obj) -> str:
         return obj.airplane.airplane_type.name
 
-    def get_seat_in_row(self, obj):
+    @extend_schema_field(int)
+    def get_seat_in_row(self, obj) -> int:
         return obj.airplane.seats_in_row
 
-    def get_row(self, obj):
+    @extend_schema_field(int)
+    def get_row(self, obj) -> int:
         return obj.airplane.rows
 
-    def get_available_seats(self, obj):
+    @extend_schema_field(int)
+    def get_available_seats(self, obj) -> int:
         return obj.available_seats
 
 class FlightListSerializer(FlightSerializer):
@@ -164,7 +172,8 @@ class FlightListSerializer(FlightSerializer):
             "arrival_time",
         )
 
-    def get_taken_seats(self, obj):
+    @extend_schema_field(int)
+    def get_taken_seats(self, obj) -> int:
         return obj.taken_seats_list
 
 
@@ -195,6 +204,7 @@ class FlightRetrieveSerializer(FlightListSerializer):
             "taken_seats"
         )
 
+    @extend_schema_field(list[dict[str, int]])
     def get_taken_seats(self, obj):
         return obj.taken_seats_detail
 
